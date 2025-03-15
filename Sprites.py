@@ -2,7 +2,7 @@ from configuration import *
 import pygame
 import random
 import math
-from weapons import *
+from items import *
 
 
 

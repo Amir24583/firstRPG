@@ -2,7 +2,7 @@ from configuration import *
 import sys
 import pygame
 from Sprites import *
-from weapons import *
+from items import *
 
 class Spritesheet:
     def __init__(self, path):
@@ -32,11 +32,11 @@ class Game:
         self.bullets = pygame.sprite.Group() 
         self.mainPlayer = pygame.sprite.Group()
         self.healthbar = pygame.sprite.Group()
-        self.terrain_spritesheet = Spritesheet('assets/images/terrain.png')    
-        self.player_spritesheet = Spritesheet('assets/images/green.png')
-        self.enemy_spritesheet = Spritesheet('assets/images/evil.png')
-        self.weapon_spritesheet = Spritesheet('assets/images/sword.png')
-        self.bullet_spritesheet = Spritesheet('assets/images/powerball.png')
+        self.terrain_spritesheet = Spritesheet('GameAssets/images/terrain.png')    
+        self.player_spritesheet = Spritesheet('GameAssets/images/green.png')
+        self.enemy_spritesheet = Spritesheet('GameAssets/images/evil.png')
+        self.weapon_spritesheet = Spritesheet('GameAssets/images/sword.png')
+        self.bullet_spritesheet = Spritesheet('GameAssets/images/powerball.png')
         self.collided = False
         self.create_tilemap()
 
