@@ -112,6 +112,8 @@ class Player(pygame.sprite.Sprite):
         self.waitTime = 10
         self.shootState = "shoot"
 
+        self.health = PLAYER_HEALTH
+
 
 
     def movement(self):
@@ -264,6 +266,15 @@ class Player(pygame.sprite.Sprite):
                 self.shootState = "shoot"
                 self.counter = 0
 
+    def damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
+            self.game.running = False
+            self.healthbar.kill_bar()
+        else:
+            self.healthbar.damage(self.health, PLAYER_HEALTH)
+
 
     def update(self):
         self.movement()
@@ -326,6 +337,8 @@ class Enemy(pygame.sprite.Sprite):
         self.currentSteps = 0
 
         self.state = "walk"
+
+        self.health = ENEMY_HEALTH
     
     def movement(self):
 
@@ -333,18 +346,22 @@ class Enemy(pygame.sprite.Sprite):
             if self.direction == 'left':
                 self.x_change = self.x_change - ENEMY_SPEED
                 self.currentSteps += 1
+                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
 
             elif self.direction == 'right':
                 self.x_change = self.x_change + ENEMY_SPEED
                 self.currentSteps += 1
+                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
 
             elif self.direction == 'up':
                 self.y_change = self.y_change - ENEMY_SPEED
                 self.currentSteps += 1
+                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
 
             elif self.direction == 'down':
                 self.y_change = self.y_change + ENEMY_SPEED
                 self.currentSteps += 1
+                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
 
 
             # Boundary checks
@@ -474,6 +491,14 @@ class Enemy(pygame.sprite.Sprite):
         if collide:
             self.game.running = False
 
+    def damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
+            self.healthbar.kill_bar()
+        else:
+            self.healthbar.damage(self.health, ENEMY_HEALTH)
+
 
 class player_healthbar(pygame.sprite.Sprite):
     def __init__(self, game,x ,y):
@@ -499,6 +524,11 @@ class player_healthbar(pygame.sprite.Sprite):
     def move(self):
         self.rect.x = self.game.player.rect.x
         self.rect.y = self.game.player.rect.y -TILE_SIZE/2
+
+    def damage(self):
+        self.image.fill(RED)
+        width = self.rect.width * self.game.player.health/PLAYER_HEALTH
+        pygame.draw.rect(self.image, GREEN, (0,0, width, self.height), 0)
     
     def update(self):
         self.move()
@@ -530,6 +560,14 @@ class enemy_healthbar(pygame.sprite.Sprite):
     def move(self):
         self.rect.x = self.enemy.rect.x
         self.rect.y = self.enemy.rect.y -TILE_SIZE/2
-    
+
+    def damage(self, health , totalHealth):
+        self.image.fill(RED)
+        width = self.rect.width * health/totalHealth
+        pygame.draw.rect(self.image, GREEN, (0,0, width, self.height), 0)
+
+    def kill_bar(self):
+        self.kill()
+
     def update(self):
         self.move()

@@ -37,6 +37,7 @@ class Game:
         self.enemy_spritesheet = Spritesheet('GameAssets/images/evil.png')
         self.weapon_spritesheet = Spritesheet('GameAssets/images/sword.png')
         self.bullet_spritesheet = Spritesheet('GameAssets/images/fireball/FB500-1.png')
+        self.enemy_bullet_spritesheet = Spritesheet('GameAssets/images/powerball.png')
         self.collided = False
         self.create_tilemap()
 

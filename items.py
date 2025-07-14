@@ -57,6 +57,8 @@ class Bullet(pygame.sprite.Sprite):
 
         self.direction = self.game.player.direction
 
+        self.damage = 1
+
     def move(self):
         if self.direction == 'up':
             self.rect.y -= BULLET_SPEED
@@ -74,10 +76,66 @@ class Bullet(pygame.sprite.Sprite):
 
     def collide_enemy(self):
         collide = pygame.sprite.spritecollide(self, self.game.enemies, False)
-        if collide:    
+        if collide:
+            collide[0].damage(self.damage)
             self.kill()
+        # collide = pygame.sprite.spritecollide(self, self.game.enemies, False)
+        # if collide:    
+        #     self.kill()
 
     def update(self):
         self.move()
         self.collide_blocks()
         self.collide_enemy()
+
+
+class ENEMY_Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, game):
+        self.game=game
+        self._layer = PLAYER_LAYER
+        self.groups = self.game.all_sprites, self.game.bullets
+        super().__init__(self.groups)
+
+        self.x = x
+        self.y = y
+
+        self.width = TILE_SIZE
+        self.height = TILE_SIZE
+
+        self.image = self.game.bullet_spritesheet.get_image(0, 0, self.width, self.height)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.direction = self.game.player.direction
+
+        self.damage = 1
+
+    def move(self):
+        if self.direction == 'up':
+            self.rect.y -= BULLET_SPEED
+        if self.direction == 'down':
+            self.rect.y += BULLET_SPEED
+        if self.direction == 'left':
+            self.rect.x -= BULLET_SPEED
+        if self.direction == 'right':
+            self.rect.x += BULLET_SPEED
+
+    def collide_blocks(self):
+        collide = pygame.sprite.spritecollide(self, self.game.blocks, False)
+        if collide:    
+            self.kill()
+
+    def collide_player(self):
+        collide = pygame.sprite.spritecollide(self, self.game.mainPlayer, False)
+        if collide:
+            self.game.player.damage(self.damage)
+            self.kill()
+        # collide = pygame.sprite.spritecollide(self, self.game.enemies, False)
+        # if collide:    
+        #     self.kill()
+
+    def update(self):
+        self.move()
+        self.collide_blocks()
+        self.collide_player()
