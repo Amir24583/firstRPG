@@ -113,11 +113,13 @@ class Player(pygame.sprite.Sprite):
         self.shootState = "shoot"
 
         self.health = PLAYER_HEALTH
+        Particle(self.game, self.rect.x, self.rect.y)
 
 
 
     def movement(self):
 
+        Particle(self.game, self.rect.x, self.rect.y)
         pressed = pygame.key.get_pressed()
 
         if pressed[pygame.K_LEFT] or pressed[pygame.K_a]:
@@ -271,7 +273,7 @@ class Player(pygame.sprite.Sprite):
         if self.health <= 0:
             self.kill()
             self.game.running = False
-            self.healthbar.kill_bar()
+            self.healthbar.kill_healthbar()
         else:
             self.healthbar.damage(self.health, PLAYER_HEALTH)
 
@@ -339,6 +341,17 @@ class Enemy(pygame.sprite.Sprite):
         self.state = "walk"
 
         self.health = ENEMY_HEALTH
+
+        self.shootCounter = 0
+        self.shootWaitTime = random.choice([5, 10, 20, 30, 40, 50, 60, 70, 80, 90])
+        self.shootState = "halt"
+
+    def shoot(self):
+        self.shootCounter += 1
+        if self.shootCounter == self.shootWaitTime:
+            self.shootState = "shoot"
+            self.shootCounter = 0
+
     
     def movement(self):
 
@@ -346,22 +359,31 @@ class Enemy(pygame.sprite.Sprite):
             if self.direction == 'left':
                 self.x_change = self.x_change - ENEMY_SPEED
                 self.currentSteps += 1
-                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+
+                if self.shootState == "shoot":
+                    ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                    self.shootState = "halt"
 
             elif self.direction == 'right':
                 self.x_change = self.x_change + ENEMY_SPEED
                 self.currentSteps += 1
-                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                if self.shootState == "shoot":
+                    ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                    self.shootState = "halt"
 
             elif self.direction == 'up':
                 self.y_change = self.y_change - ENEMY_SPEED
                 self.currentSteps += 1
-                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                if self.shootState == "shoot":
+                    ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                    self.shootState = "halt"
 
             elif self.direction == 'down':
                 self.y_change = self.y_change + ENEMY_SPEED
                 self.currentSteps += 1
-                ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                if self.shootState == "shoot":
+                    ENEMY_Bullet(self.rect.x, self.rect.y, self.game)
+                    self.shootState = "halt"
 
 
             # Boundary checks
@@ -464,6 +486,7 @@ class Enemy(pygame.sprite.Sprite):
             self.state = "idle"
         self.collide_block()
         self.collide_Player()
+        self.shoot()
 
 
     def collide_block(self):
@@ -525,7 +548,10 @@ class player_healthbar(pygame.sprite.Sprite):
         self.rect.x = self.game.player.rect.x
         self.rect.y = self.game.player.rect.y -TILE_SIZE/2
 
-    def damage(self):
+    def kill_healthbar(self):
+        self.kill()
+
+    def damage(self, health , totalHealth):
         self.image.fill(RED)
         width = self.rect.width * self.game.player.health/PLAYER_HEALTH
         pygame.draw.rect(self.image, GREEN, (0,0, width, self.height), 0)
@@ -570,4 +596,36 @@ class enemy_healthbar(pygame.sprite.Sprite):
         self.kill()
 
     def update(self):
+        self.move()
+
+
+class Particle(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.game = game
+        self._layer = HEALTH_LAYER
+        self.groups = self.game.all_sprites
+        super().__init__(self.groups)
+
+
+        self.width = 4
+        self.height = 4
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(PARTICLE_COLOR)  # color for particles
+        self.rect = self.image.get_rect()
+        self.rect.x = x + random.choice([-4,-3,-1,0,1,5,10,20])
+        self.rect.y = y + TILE_SIZE
+       
+        self.lifetime = 6
+        self.counter = 0
+
+    def move(self):
+        self.rect.y += 1
+        self.counter += 1
+        if self.counter >= self.lifetime:
+            self.counter = 0
+            self.kill()
+
+    def update(self):
+        # Update logic for particles can be added here
         self.move()

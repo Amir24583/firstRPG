@@ -39,6 +39,8 @@ class Game:
         self.bullet_spritesheet = Spritesheet('GameAssets/images/fireball/FB500-1.png')
         self.enemy_bullet_spritesheet = Spritesheet('GameAssets/images/powerball.png')
         self.collided = False
+        self.enemy_collided = False
+        self.block_collided = False
         self.create_tilemap()
 
         # Add camera

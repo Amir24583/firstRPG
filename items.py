@@ -102,7 +102,7 @@ class ENEMY_Bullet(pygame.sprite.Sprite):
         self.width = TILE_SIZE
         self.height = TILE_SIZE
 
-        self.image = self.game.bullet_spritesheet.get_image(0, 0, self.width, self.height)
+        self.image = self.game.enemy_bullet_spritesheet.get_image(0, 0, self.width, self.height)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
