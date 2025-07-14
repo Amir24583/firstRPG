@@ -244,7 +244,7 @@ class Player(pygame.sprite.Sprite):
             self.game.collided = False
 
     def collide_weapon(self):
-        collide = pygame.sprite.spritecollide(self, self.game.weapons, True)
+        collide = pygame.sprite.spritecollide(self, self.game.weapons , True)
 
         if collide: 
             self.swordEquipped = True
